@@ -19,6 +19,7 @@ spec:
         checksum/{{ .Values.oasisServer.name }}: {{ toJson .Values.oasisServer | sha256sum }}
     spec:
       {{- include "h.affinity" . | nindent 6 }}
+      serviceAccountName: myspacesa
       initContainers:
       {{- include "h.initTcpAvailabilityCheck" (list . .Values.oasisServer) | nindent 8}}
       containers:
