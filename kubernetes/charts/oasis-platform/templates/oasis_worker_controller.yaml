@@ -1,35 +1,3 @@
-{{- $workerControllerServiceAccountName := printf "%s-worker-controller" .Release.Name | lower }}
-{{- $clusterRoleBindingName := printf "%s-worker-controller-deployment-management" .Release.Name }}
-{{- $clusterRoleName := printf "%s-deployment-management" .Release.Name }}
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  namespace: {{ .Release.Namespace }}
-  name: {{ $workerControllerServiceAccountName }}
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  namespace: {{ .Release.Namespace }}
-  name: {{ $clusterRoleName }}
-rules:
-  - apiGroups: ["*"]
-    resources: ["deployments"]
-    verbs: ["get", "watch", "list", "update", "patch"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: {{ $clusterRoleBindingName }}
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: {{ $clusterRoleName }}
-subjects:
-  - kind: ServiceAccount
-    name: {{ $workerControllerServiceAccountName }}
-    namespace: {{ .Release.Namespace }}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -51,7 +19,6 @@ spec:
         checksum/{{ .Values.oasisServer.name }}: {{ toJson .Values.oasisServer | sha256sum }}
     spec:
       {{- include "h.affinity" . | nindent 6 }}
-      serviceAccountName: {{ $workerControllerServiceAccountName }}
       initContainers:
       {{- include "h.initTcpAvailabilityCheck" (list . .Values.oasisServer) | nindent 8}}
       containers:
