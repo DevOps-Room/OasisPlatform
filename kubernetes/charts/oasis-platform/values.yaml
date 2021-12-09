@@ -4,15 +4,15 @@
 images:
   oasis:
     platform:
-      image: localhost:5000/coreoasis/api_server
-      version: dev
+      image: john001.azurecr.io/apiserver
+      version: latest
       imagePullPolicy: Always
     ui:
       image: coreoasis/oasisui_app
       version: 1.9.0
     worker_controller:
-      image: localhost:5000/coreoasis/worker_controller
-      version: dev
+      image: john001.azurecr.io/workercontroller
+      version: latest
       imagePullPolicy: Always
   postgres:
     image: postgres
